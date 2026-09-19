@@ -34,6 +34,23 @@
   }
 
   /* ---------- 2. DESTINOS ---------- */
+  /* Bajar a los resultados, igual desde el buscador que desde una
+     tarjeta de destino. No usa scrollIntoView porque la cabecera es
+     sticky: alinear el borde superior de la sección deja el título
+     tapado debajo de ella. Se mide y se descuenta su alto.
+
+     Se llama después de repintar, y getBoundingClientRect fuerza el
+     recálculo del diseño, así que la posición ya es la definitiva
+     aunque la lista acabe de cambiar de alto. */
+  function irAResultados() {
+    const seccion = document.getElementById("resultados");
+    if (!seccion) return;
+    const cab = document.querySelector(".site-head");
+    const alto = cab ? cab.getBoundingClientRect().height : 0;
+    const y = window.scrollY + seccion.getBoundingClientRect().top - alto - 8;
+    window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
+  }
+
   function pintarDestinos() {
     const cont = $("#dest-grid");
     cont.innerHTML = R.DESTINOS.map(function (d) {
@@ -484,7 +501,7 @@
       pintarBarraComparar();
       pintarHisto();
       pintarVista();
-      document.getElementById("resultados").scrollIntoView({ behavior: "smooth", block: "start" });
+      irAResultados();
     });
 
     $("#f-destino").addEventListener("change", function (e) {
@@ -505,7 +522,7 @@
       pintarBarraComparar();
       pintarHisto();
       pintarVista();
-      document.getElementById("resultados").scrollIntoView({ behavior: "smooth", block: "start" });
+      irAResultados();
     });
 
     const btnG = $("#f-huespedes"), pop = $("#guest-pop");
