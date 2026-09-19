@@ -333,9 +333,46 @@
   }
 
   /* Si una foto no carga, se retira y queda la ilustración de abajo. */
+  /* Si una foto no carga, se retira y queda debajo la ilustración. Pero
+     un fallo puntual de red no debería condenarla: al pedir dieciséis
+     tarjetas o cinco fotos de galería a la vez, que alguna se caiga es
+     normal, y antes bastaba una para dejar la ilustración hasta que se
+     recargara la página entera. Ahora se reintenta una vez.
+
+     El reintento lleva un parámetro extra en la URL a propósito: sin
+     él, el navegador devuelve la misma respuesta fallida que acaba de
+     cachear y el segundo intento no llega a la red. Se quita `srcset`
+     para que el candidato que se pide sea exactamente ese.
+
+     La marca `respaldo` evita duplicar escuchas: respaldarFotos se
+     llama varias veces sobre el mismo documento. */
+  const REINTENTOS = 1;
+
   function respaldarFotos(contenedor) {
     (contenedor || document).querySelectorAll(".art-photo").forEach(function (img) {
-      img.addEventListener("error", function () { img.remove(); }, { once: true });
+      if (img.dataset.respaldo) return;
+      img.dataset.respaldo = "1";
+
+      let intentos = 0;
+
+      function fallo() {
+        if (intentos < REINTENTOS) {
+          intentos++;
+          const url = img.currentSrc || img.src;
+          if (!url) { img.remove(); return; }
+          img.removeAttribute("srcset");
+          img.src = url + (url.indexOf("?") === -1 ? "?" : "&") + "reintento=" + intentos;
+          return;
+        }
+        img.remove();
+      }
+
+      img.addEventListener("error", fallo);
+
+      /* Si la foto ya había fallado antes de llegar aquí, el evento
+         `error` no volverá a dispararse y la escucha no serviría de
+         nada. Una imagen terminada con ancho cero es justo eso. */
+      if (img.complete && img.naturalWidth === 0) fallo();
     });
   }
 

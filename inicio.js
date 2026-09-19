@@ -124,8 +124,17 @@
       }).join("");
 
       return '<article class="hotel' + (h.patrocinado ? " hotel-patro" : "") + '">' +
-        '<div class="art">' + R.escena(d.tipo) +
-          R.imagen(h.fotos[0], "(max-width:620px) 92vw, 232px") +
+        '<div class="art">' +
+          /* La foto lleva a la ficha, igual que el nombre. Va fuera del
+             orden de tabulación y oculta a los lectores de pantalla: es
+             el mismo destino que el enlace del título, y anunciarlo dos
+             veces solo alarga el recorrido sin aportar nada.
+             El corazón y la casilla de comparar quedan fuera de este
+             enlace, así que siguen funcionando por su cuenta. */
+          '<a class="art-link" href="hotel.html?id=' + h.id + '" tabindex="-1" aria-hidden="true">' +
+            R.escena(d.tipo) +
+            R.imagen(h.fotos[0], "(max-width:620px) 92vw, 232px") +
+          '</a>' +
           (h.badge ? '<span class="hotel-badge">' + h.badge + '</span>' : '') +
           '<span class="entorno">' + R.entornoDe(d.tipo) + '</span>' +
           R.favoritos.boton(h.id) +

@@ -282,6 +282,13 @@ button,input,select{font:inherit;color:inherit}
    ilustración: la tarjeta nunca muestra un hueco roto. */
 .art{position:relative;overflow:hidden;background:var(--sunken)}
 .art svg{width:100%;height:100%;display:block}
+/* Enlace que cubre la foto de la tarjeta de resultado. Va por encima
+   de la imagen y de la ilustración, pero por debajo del distintivo, la
+   etiqueta de entorno y el corazón, que tienen z-index propio: así la
+   foto navega a la ficha y el corazón sigue siendo suyo. */
+.art-link{position:absolute;inset:0;display:block;z-index:1}
+.hotel .art-link{cursor:pointer}
+
 .art-photo{
   position:absolute;inset:0;width:100%;height:100%;
   object-fit:cover;max-width:100%
