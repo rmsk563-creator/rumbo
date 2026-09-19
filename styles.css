@@ -388,7 +388,14 @@ input[type="range"]{width:100%;accent-color:var(--brand);cursor:pointer}
   overflow:hidden;transition:border-color .2s,box-shadow .2s
 }
 .hotel:hover{border-color:var(--line-strong);box-shadow:var(--shadow-card)}
-.hotel .art{aspect-ratio:4/3;max-width:100%}
+/* La foto llena el alto de la fila, que lo fija la columna de texto.
+   Llevaba un aspect-ratio fijo, así que se quedaba en 174 px mientras
+   la tarjeta crecía con los servicios: un hotel con seis dejaba 200 px
+   de hueco debajo de la imagen. Las columnas del grid ya se estiran por
+   defecto; lo que lo impedía era esa proporción fija.
+   En la versión apilada de móvil vuelve la proporción, porque allí no
+   hay columna al lado que defina el alto. */
+.hotel .art{height:100%;max-width:100%}
 .hotel-badge{
   position:absolute;top:10px;left:10px;z-index:2;background:var(--sun);color:var(--on-accent);
   font-size:.6875rem;font-weight:700;padding:5px 10px;border-radius:var(--r-pill)
@@ -454,7 +461,7 @@ input[type="range"]{width:100%;accent-color:var(--brand);cursor:pointer}
 }
 @media (max-width:620px){
   .hotel{grid-template-columns:1fr}
-  .hotel .art{aspect-ratio:16/9}
+  .hotel .art{height:auto;aspect-ratio:16/9}
   .hotel-main{padding:var(--s-4) var(--s-4) 0}
   .hotel-side{padding:var(--s-4);flex-wrap:wrap;gap:var(--s-3)}
 }
@@ -751,7 +758,7 @@ body.con-barra{padding-bottom:84px}
   background:var(--surface-raised);border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden
 }
 .res-cancelada{opacity:.72}
-.res-art{aspect-ratio:4/3;max-width:100%}
+.res-art{height:100%;max-width:100%}
 .res-cuerpo{padding:var(--s-5) 0;min-width:0}
 .res-top{display:flex;align-items:center;gap:var(--s-3);margin-bottom:var(--s-2);flex-wrap:wrap}
 .res-estado{border-radius:var(--r-pill);padding:4px 11px;font-size:.6875rem;font-weight:700}
@@ -787,7 +794,7 @@ body.con-barra{padding-bottom:84px}
 }
 @media (max-width:620px){
   .res-card{grid-template-columns:1fr}
-  .res-art{aspect-ratio:16/9}
+  .res-art{height:auto;aspect-ratio:16/9}
   .res-cuerpo{padding:var(--s-4) var(--s-4) 0}
   .res-lado{padding:var(--s-4)}
 }
