@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mis reservas — Rumbo</title>
+<meta name="description" content="Tus reservas guardadas: fechas, huéspedes, desglose y cancelación gratuita hasta 48 horas antes.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://images.unsplash.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-head">
+  <div class="wrap head-in">
+    <a class="logo" href="index.html">
+      <svg width="26" height="26" viewBox="0 0 26 26" fill="none" aria-hidden="true">
+        <circle cx="13" cy="13" r="12" fill="#0D7A75"/>
+        <path d="M17.6 8.4 11.3 11.3 8.4 17.6 14.7 14.7z" fill="#F5A524"/>
+      </svg>
+      Rumbo
+    </a>
+    <nav class="nav" aria-label="Principal">
+      <a href="index.html#destinos">Destinos</a>
+      <a href="index.html#resultados">Hoteles</a>
+      <a href="index.html#garantias">Por qué Rumbo</a>
+    </nav>
+    <a class="head-cta activo" href="reservas.html" aria-current="page">
+      Mis reservas
+      <span class="head-count" data-contador-reservas hidden></span>
+    </a>
+  </div>
+</header>
+
+<main>
+  <nav class="crumbs wrap" aria-label="Ruta">
+    <a href="index.html">Inicio</a>
+    <span aria-hidden="true">›</span>
+    <span aria-current="page">Mis reservas</span>
+  </nav>
+
+  <section class="wrap pagina-head">
+    <p class="eyebrow">Tu cuenta</p>
+    <h1>Mis reservas</h1>
+    <p class="pagina-lead" id="res-lead"></p>
+  </section>
+
+  <section class="wrap seccion-tabla">
+    <div class="res-tabs" id="res-tabs" role="tablist" aria-label="Filtrar reservas" hidden>
+      <button class="chip" type="button" role="tab" data-estado="todas" aria-selected="true">Todas</button>
+      <button class="chip" type="button" role="tab" data-estado="confirmada" aria-selected="false">Confirmadas</button>
+      <button class="chip" type="button" role="tab" data-estado="cancelada" aria-selected="false">Canceladas</button>
+    </div>
+
+    <div id="res-lista" aria-live="polite"></div>
+  </section>
+
+  <!-- Hoteles guardados. Sección aparte y no una pestaña más: las
+       pestañas de arriba filtran reservas, anidar otras dentro
+       confundiría dos ejes distintos. -->
+  <section class="wrap seccion-tabla" id="seccion-favoritos" hidden>
+    <div class="sec-head">
+      <div>
+        <p class="eyebrow">Tu cuenta</p>
+        <h2>Hoteles guardados</h2>
+      </div>
+    </div>
+    <div id="fav-lista" aria-live="polite"></div>
+  </section>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-base">
+      <span>© 2026 Rumbo. Proyecto de práctica, no es un servicio real.</span>
+      <span><a href="index.html">Inicio</a> · <a href="comparar.html">Comparador</a></span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="datos.js"></script>
+<script src="auth.js"></script>
+<script src="reservas.js"></script>
+</body>
+</html>

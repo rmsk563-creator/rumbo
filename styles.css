@@ -1,0 +1,1110 @@
+/* ============================================================
+   RUMBO — hoja de estilos
+   Identidad: tinta de mapa sobre papel. Verde azulado como color
+   de marca, marigold como único color de acción.
+
+   Orden del archivo:
+     1. Tokens (sistema claro único)
+     2. Base y utilidades
+     3. Cabecera
+     4. Hero
+     5. Buscador
+     6. Secciones
+    6b. Cómo funciona
+     7. Tarjetas de destino
+     8. Resultados: filtros y tarjetas de hotel
+     9. Garantías y prueba social
+    10. Pie
+    11. Botones compartidos
+    12. Barra de comparación
+    13. Páginas interiores: ficha y reserva
+    14. Comparador
+    15. Mis reservas
+    16. Galería, visor y reseñas por categoría
+    17. Distribución de precios
+    18. Vista de mapa
+    19. Cuenta: acceso, registro y menú de la cabecera
+    20. Favoritos y hoteles parecidos
+    21. Mapa real (Leaflet)
+   ============================================================ */
+
+/* ---------- 1. TOKENS ----------
+   Sistema claro único. El verde azulado y el ámbar son acento: viven
+   en botones, enlaces activos, el logo y los realces, nunca como
+   fondo de sección. El único fondo oscuro de todo el sitio es el
+   velo del hero, que va sobre la fotografía.
+
+   No hay tema oscuro: el diseño se compromete con un solo mundo
+   visual, como hacen Airbnb o Booking. Por eso `color-scheme` es
+   `light`, para que los controles nativos (fechas, selects, sliders)
+   también se pinten claros aunque el sistema esté en modo oscuro.
+   ---------- */
+:root{
+  /* Superficies */
+  --surface:#FAFAF8;        /* lienzo de la página */
+  --surface-raised:#FFFFFF; /* tarjetas, paneles, barra de búsqueda */
+  --sunken:#F2F2F0;         /* bandas que se diferencian sin usar color */
+
+  /* Texto */
+  --ink:#111111;            /* títulos */
+  --ink-soft:#444444;       /* cuerpo */
+  --ink-faint:#6E6E6E;      /* metadatos y etiquetas de campo */
+
+  /* Acento */
+  --brand:#0D7A75;
+  --brand-deep:#0A5F5B;
+  --brand-wash:#E6F2F1;     /* tinte del acento para realces suaves */
+  --sun:#F5A524;
+  --sun-deep:#DE8E0C;
+  --on-accent:#111111;      /* texto sobre el ámbar */
+
+  /* Bordes: --line separa superficies y es decorativo; --line-strong
+     dibuja el borde de controles reales y cumple el 3:1 de WCAG 1.4.11. */
+  --line:#E5E5E1;
+  --line-strong:#8A8A86;
+
+  --danger:#B3261E;
+  --danger-ink:#FFFFFF;
+
+  --shadow-card:0 1px 2px rgba(17,17,17,.05), 0 8px 24px -12px rgba(17,17,17,.16);
+  --shadow-float:0 2px 6px rgba(17,17,17,.07), 0 24px 48px -20px rgba(17,17,17,.24);
+
+  /* escala tipográfica */
+  --step-0:.8125rem;
+  --step-1:.9375rem;
+  --step-2:1.0625rem;
+  --step-3:1.375rem;
+  --step-4:1.875rem;
+  --step-5:clamp(2.1rem,1.2rem + 3.4vw,3.4rem);
+
+  /* escala de espaciado, base 4 */
+  --s-1:4px;  --s-2:8px;  --s-3:12px; --s-4:16px;
+  --s-5:24px; --s-6:32px; --s-7:48px; --s-8:64px; --s-9:96px;
+
+  --r-sm:8px; --r-md:14px; --r-lg:22px; --r-xl:32px; --r-pill:999px;
+
+  --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --body:"DM Sans","Segoe UI",system-ui,-apple-system,sans-serif;
+
+  color-scheme:light;
+}
+
+/* ---------- 2. BASE ---------- */
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:var(--surface);
+  color:var(--ink);
+  font-family:var(--body);
+  font-size:var(--step-1);
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+img{max-width:100%;display:block}
+[hidden]{display:none !important}
+h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance;line-height:1.1;letter-spacing:-.02em}
+p{margin:0}
+a{color:inherit}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px;border-radius:4px}
+
+.num{font-variant-numeric:tabular-nums}
+.eyebrow{
+  font-size:.6875rem;font-weight:700;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--brand);margin:0 0 var(--s-2)
+}
+/* Contenedor único: fija el ancho máximo y el margen lateral mínimo. */
+.wrap{width:100%;max-width:1200px;margin-inline:auto;padding-inline:20px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
+
+/* ---------- 3. CABECERA ---------- */
+.site-head{
+  position:sticky;top:env(safe-area-inset-top,0px);z-index:50;
+  background:color-mix(in srgb,var(--surface) 88%,transparent);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);
+}
+.head-in{display:flex;align-items:center;gap:var(--s-5);min-height:66px}
+.logo{display:flex;align-items:center;gap:9px;font-family:var(--display);font-weight:800;font-size:1.125rem;letter-spacing:-.03em;text-decoration:none}
+.logo svg{flex:none}
+.nav{display:flex;gap:var(--s-5);margin-left:auto;font-size:var(--step-1);font-weight:500}
+.nav a{color:var(--ink-soft);text-decoration:none;padding:6px 0;border-bottom:2px solid transparent;transition:color .18s,border-color .18s}
+.nav a:hover{color:var(--ink);border-bottom-color:var(--sun)}
+.head-cta{
+  border:1px solid var(--line-strong);background:transparent;color:var(--ink);
+  padding:9px 16px;border-radius:var(--r-pill);font-weight:700;font-size:var(--step-0);cursor:pointer;
+  transition:background .18s,border-color .18s
+}
+.head-cta:hover{background:var(--brand-wash);border-color:var(--brand)}
+@media (max-width:820px){ .nav{display:none} }
+
+/* ---------- 4. HERO ---------- */
+.hero{padding-block:var(--s-5) 0}
+.hero-panel{
+  position:relative;overflow:hidden;
+  background:linear-gradient(155deg,#0E3C38 0%,#0B2E2B 58%,#09403C 100%);
+  border-radius:var(--r-xl);
+  padding:var(--s-8) var(--s-6) calc(var(--s-9) + 26px);
+  text-align:center;
+  isolation:isolate;
+}
+/* Tres capas apiladas en el hero. La ilustración de contornos es el
+   respaldo: si la fotografía no carga, el script la retira y queda el
+   mapa, igual que en las tarjetas. */
+.hero-panel .contours{position:absolute;inset:0;width:100%;height:100%;opacity:.45;z-index:-3}
+.hero-photo{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;object-position:center 42%;z-index:-2;max-width:100%
+}
+/* Velo en dos capas: una base uniforme que garantiza el contraste
+   sobre cualquier foto, y un óvalo más denso en la zona de lectura.
+   En el peor caso (foto blanca) el texto blanco queda en 6:1. */
+.hero-scrim{
+  position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(ellipse 74% 64% at 50% 46%,
+      rgba(11,46,43,.86) 0%, rgba(11,46,43,.55) 52%, rgba(11,46,43,.1) 100%),
+    linear-gradient(180deg, rgba(11,46,43,.62) 0%, rgba(11,46,43,.5) 40%, rgba(11,46,43,.78) 100%)
+}
+.hero h1{font-size:var(--step-5);font-weight:800;color:#FFFFFF;max-width:16ch;margin-inline:auto}
+.hero h1 em{font-style:normal;color:var(--sun)}
+.hero-sub{color:#BFD8D4;margin-top:var(--s-4);max-width:52ch;margin-inline:auto;font-size:var(--step-2)}
+.hero-note{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;margin-top:var(--s-5);
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);
+  color:#DDEBE8;border-radius:var(--r-pill);padding:7px 16px;font-size:var(--step-0);font-weight:500;
+  text-align:center;max-width:100%
+}
+.hero-note b{color:var(--sun);font-weight:700}
+
+/* ---------- 5. BUSCADOR ---------- */
+.search-dock{margin-top:-58px;position:relative;z-index:10}
+.search{
+  background:var(--surface-raised);border:1px solid var(--line);border-radius:var(--r-lg);
+  box-shadow:var(--shadow-float);padding:var(--s-3);
+  display:grid;grid-template-columns:1.5fr 1fr 1fr 1.15fr auto;gap:var(--s-2);align-items:end
+}
+.field{display:flex;flex-direction:column;gap:5px;padding:8px 12px;border-radius:var(--r-md);position:relative;min-width:0}
+/* Separadores en vez de cajas: el conjunto se lee como un control, no como cinco. */
+.field + .field{border-left:1px solid var(--line)}
+.field label{font-size:.6875rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-faint)}
+.field input,.field select,.guest-btn{
+  border:0;background:transparent;font-size:var(--step-1);font-weight:500;color:var(--ink);
+  padding:2px 0;width:100%;min-width:0
+}
+.field select,.field input[type="date"]{cursor:pointer}
+.guest-btn{text-align:left;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:6px}
+.guest-btn svg{flex:none;transition:transform .2s}
+.guest-btn[aria-expanded="true"] svg{transform:rotate(180deg)}
+
+.btn-search{
+  background:var(--sun);color:var(--on-accent);border:0;border-radius:var(--r-md);
+  padding:0 26px;height:56px;font-weight:700;font-size:var(--step-2);cursor:pointer;
+  display:inline-flex;align-items:center;gap:9px;white-space:nowrap;
+  transition:background .18s,transform .18s
+}
+.btn-search:hover{background:var(--sun-deep);transform:translateY(-1px)}
+.btn-search:active{transform:translateY(0)}
+
+/* Popover de huéspedes */
+.guest-pop{
+  position:absolute;top:calc(100% + 10px);right:0;width:300px;z-index:30;
+  background:var(--surface-raised);border:1px solid var(--line);border-radius:var(--r-md);
+  box-shadow:var(--shadow-float);padding:var(--s-4)
+}
+.guest-row{display:flex;align-items:center;justify-content:space-between;gap:var(--s-3);padding:10px 0}
+.guest-row + .guest-row{border-top:1px solid var(--line)}
+.guest-row strong{display:block;font-size:var(--step-1);font-weight:700}
+.guest-row span{font-size:var(--step-0);color:var(--ink-soft)}
+.stepper{display:flex;align-items:center;gap:var(--s-3);flex:none}
+.stepper button{
+  width:32px;height:32px;border-radius:50%;border:1px solid var(--line-strong);
+  background:transparent;cursor:pointer;font-size:1.125rem;line-height:1;font-weight:700;
+  display:grid;place-items:center;transition:border-color .18s,background .18s,color .18s
+}
+.stepper button:hover:not(:disabled){border-color:var(--brand);background:var(--brand-wash);color:var(--brand-deep)}
+.stepper button:disabled{opacity:.35;cursor:not-allowed}
+.stepper output{min-width:20px;text-align:center;font-weight:700}
+.ages{border-top:1px solid var(--line);margin-top:var(--s-2);padding-top:var(--s-3)}
+.ages p{font-size:var(--step-0);color:var(--ink-soft);margin-bottom:var(--s-2)}
+.ages-grid{display:flex;flex-wrap:wrap;gap:var(--s-2)}
+.ages-grid select{
+  border:1px solid var(--line-strong);border-radius:var(--r-sm);padding:6px 8px;
+  background:var(--surface);font-size:var(--step-0);cursor:pointer
+}
+
+@media (max-width:1000px){
+  .search{grid-template-columns:1fr 1fr;gap:var(--s-1)}
+  /* Sin separadores verticales, cada campo recupera su propio borde. */
+  .field + .field{border-left:0}
+  .field{border:1px solid var(--line);border-radius:var(--r-md)}
+  .btn-search{grid-column:1/-1;width:100%;justify-content:center;margin-top:var(--s-2)}
+  .guest-pop{right:auto;left:0;width:min(300px,calc(100vw - 56px))}
+}
+@media (max-width:560px){
+  .search{grid-template-columns:1fr}
+  .search-dock{margin-top:-40px}
+  .hero-panel{padding:var(--s-7) var(--s-4) calc(var(--s-8) + 20px);border-radius:var(--r-lg)}
+}
+
+/* ---------- 6. SECCIONES ---------- */
+.section{padding-block:var(--s-9)}
+.section.sunken{background:var(--sunken);border-block:1px solid var(--line)}
+.sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--s-5);margin-bottom:var(--s-6);flex-wrap:wrap}
+.sec-head h2{font-size:var(--step-4);font-weight:700;max-width:20ch}
+.sec-head p{color:var(--ink-soft);max-width:46ch;margin-top:var(--s-2)}
+
+/* ---------- Capa de imagen ----------
+   La escena ilustrada se dibuja siempre; la fotografía se monta
+   encima. Si una foto no carga, el script la retira y queda la
+   ilustración: la tarjeta nunca muestra un hueco roto. */
+.art{position:relative;overflow:hidden;background:var(--sunken)}
+.art svg{width:100%;height:100%;display:block}
+.art-photo{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;max-width:100%
+}
+
+/* ---------- 6b. CÓMO FUNCIONA ----------
+   La numeración no es decorativa: estos tres pasos ocurren en orden,
+   y el orden es la información. */
+.pasos{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s-6);counter-reset:paso}
+.paso{
+  display:flex;flex-direction:column;gap:var(--s-3);
+  padding-top:var(--s-5);border-top:2px solid var(--line)
+}
+.paso-cab{display:flex;align-items:center;gap:var(--s-3)}
+.paso-num{
+  counter-increment:paso;flex:none;
+  width:30px;height:30px;border-radius:50%;display:grid;place-items:center;
+  background:var(--brand);color:#fff;
+  font-family:var(--display);font-weight:800;font-size:var(--step-0);
+  font-variant-numeric:tabular-nums
+}
+.paso-num::before{content:counter(paso)}
+.paso .ico{color:var(--brand);display:grid;place-items:center}
+.paso h3{font-size:var(--step-2);font-weight:700}
+.paso p{color:var(--ink-soft);font-size:var(--step-1)}
+@media (max-width:820px){
+  .pasos{grid-template-columns:1fr;gap:var(--s-5)}
+}
+
+/* ---------- 7. TARJETAS DE DESTINO ---------- */
+.dest-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:var(--s-4)}
+.dest{
+  display:flex;flex-direction:column;text-align:left;padding:0;overflow:hidden;cursor:pointer;
+  background:var(--surface-raised);border:1px solid var(--line);border-radius:var(--r-md);
+  transition:border-color .2s,box-shadow .2s,transform .2s
+}
+.dest:hover{border-color:var(--brand);box-shadow:var(--shadow-card);transform:translateY(-3px)}
+.dest[aria-pressed="true"]{border-color:var(--brand);box-shadow:0 0 0 2px var(--brand) inset}
+.dest .art{aspect-ratio:16/10;width:100%;max-width:100%;display:block}
+.dest-body{padding:var(--s-4);display:flex;flex-direction:column;gap:5px;flex:1}
+.dest-body h3{font-size:var(--step-2);font-weight:700}
+.dest-pais{font-size:var(--step-0);color:var(--ink-faint);font-weight:500}
+/* margin-top:auto empuja la razón al fondo para que los precios
+   queden alineados entre tarjetas de distinto alto. */
+.dest-tag{font-size:var(--step-0);color:var(--ink-soft);margin-top:auto;padding-top:var(--s-3)}
+.dest-price{
+  display:flex;align-items:baseline;gap:5px;margin-top:var(--s-3);
+  padding-top:var(--s-3);border-top:1px solid var(--line)
+}
+.dest-price b{font-size:var(--step-3);font-family:var(--display);font-weight:700}
+.dest-price span{font-size:var(--step-0);color:var(--ink-faint)}
+
+/* ---------- 8. RESULTADOS ---------- */
+.results-layout{display:grid;grid-template-columns:262px 1fr;gap:var(--s-6);align-items:start}
+.filters{
+  position:sticky;top:96px;background:var(--surface-raised);border:1px solid var(--line);
+  border-radius:var(--r-md);padding:var(--s-5)
+}
+.filter-block + .filter-block{margin-top:var(--s-5);padding-top:var(--s-5);border-top:1px solid var(--line)}
+.filter-block h3{font-size:var(--step-0);font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:var(--s-3)}
+.range-val{display:flex;justify-content:space-between;font-size:var(--step-0);color:var(--ink-soft);margin-bottom:6px}
+.range-val b{color:var(--ink);font-weight:700}
+input[type="range"]{width:100%;accent-color:var(--brand);cursor:pointer}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{
+  border:1px solid var(--line-strong);background:transparent;border-radius:var(--r-pill);
+  padding:6px 13px;font-size:var(--step-0);font-weight:600;cursor:pointer;
+  transition:background .18s,border-color .18s,color .18s
+}
+.chip:hover{border-color:var(--brand)}
+.chip[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:#fff}
+.check{display:flex;align-items:center;gap:10px;padding:6px 0;cursor:pointer;font-size:var(--step-1)}
+.check input{width:18px;height:18px;accent-color:var(--brand);cursor:pointer;flex:none}
+.btn-reset{
+  width:100%;margin-top:var(--s-5);border:1px solid var(--line-strong);background:transparent;
+  border-radius:var(--r-sm);padding:10px;font-size:var(--step-0);font-weight:700;cursor:pointer;
+  transition:background .18s,border-color .18s
+}
+.btn-reset:hover{background:var(--brand-wash);border-color:var(--brand)}
+
+.results-bar{display:flex;align-items:center;justify-content:space-between;gap:var(--s-4);flex-wrap:wrap;margin-bottom:var(--s-4)}
+.results-count{font-size:var(--step-1);color:var(--ink-soft)}
+.results-count b{color:var(--ink);font-weight:700}
+.sort{display:flex;align-items:center;gap:var(--s-2);font-size:var(--step-0);color:var(--ink-soft)}
+.sort select{border:1px solid var(--line-strong);border-radius:var(--r-sm);padding:8px 10px;background:var(--surface-raised);cursor:pointer;font-weight:600}
+
+.hotels{display:flex;flex-direction:column;gap:var(--s-4)}
+.hotel{
+  display:grid;grid-template-columns:232px 1fr auto;gap:var(--s-5);
+  background:var(--surface-raised);border:1px solid var(--line);border-radius:var(--r-md);
+  overflow:hidden;transition:border-color .2s,box-shadow .2s
+}
+.hotel:hover{border-color:var(--line-strong);box-shadow:var(--shadow-card)}
+.hotel .art{aspect-ratio:4/3;max-width:100%}
+.hotel-badge{
+  position:absolute;top:10px;left:10px;z-index:2;background:var(--sun);color:var(--on-accent);
+  font-size:.6875rem;font-weight:700;padding:5px 10px;border-radius:var(--r-pill)
+}
+/* Etiqueta de entorno: esquina inferior, translúcida y con desenfoque
+   para no tapar la foto. El velo del 72% mantiene el blanco en 6:1
+   incluso sobre una imagen clara. */
+.entorno{
+  position:absolute;left:10px;bottom:10px;z-index:2;
+  display:inline-flex;align-items:center;gap:5px;
+  background:rgba(17,17,17,.68);backdrop-filter:blur(6px);
+  color:#fff;border-radius:var(--r-pill);padding:4px 10px;
+  font-size:.6875rem;font-weight:700
+}
+.entorno svg{flex:none}
+.hotel-main{padding:var(--s-5) 0;display:flex;flex-direction:column;gap:var(--s-2);min-width:0}
+.hotel-main h3{font-size:var(--step-3);font-weight:700}
+.hotel-loc{font-size:var(--step-0);color:var(--ink-faint);display:flex;align-items:center;gap:6px}
+.stars{display:inline-flex;gap:2px;vertical-align:middle}
+.rating{display:flex;align-items:center;gap:9px;font-size:var(--step-0);color:var(--ink-soft);margin-top:2px}
+.rating b{
+  background:var(--brand);color:#fff;font-weight:700;border-radius:var(--r-sm);
+  padding:4px 8px;font-size:var(--step-0)
+}
+.amenities{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:var(--s-3)}
+.amenity{
+  display:inline-flex;align-items:center;gap:5px;background:var(--sunken);
+  border-radius:var(--r-sm);padding:5px 9px;font-size:.75rem;font-weight:600;color:var(--ink-soft)
+}
+.hotel-side{
+  padding:var(--s-5);display:flex;flex-direction:column;align-items:flex-end;justify-content:center;
+  gap:var(--s-1);border-left:1px solid var(--line);background:var(--sunken);min-width:190px;text-align:right
+}
+.price-from{font-size:var(--step-0);color:var(--ink-faint)}
+.price{font-family:var(--display);font-size:var(--step-4);font-weight:800;line-height:1}
+.price-unit{font-size:var(--step-0);color:var(--ink-soft);margin-bottom:var(--s-3)}
+.price-total{font-size:.75rem;color:var(--ink-faint)}
+.btn-book{
+  display:inline-flex;align-items:center;justify-content:center;
+  background:var(--brand);color:#fff;border:0;border-radius:var(--r-sm);
+  padding:11px 20px;font-weight:700;font-size:var(--step-1);cursor:pointer;white-space:nowrap;
+  text-decoration:none;   /* es un <a>: sin esto el navegador lo subraya */
+  transition:background .18s
+}
+.btn-book:hover{background:var(--brand-deep)}
+
+.empty{
+  text-align:center;padding:var(--s-9) var(--s-5);border:1px dashed var(--line-strong);
+  border-radius:var(--r-md);background:var(--surface-raised)
+}
+.empty h3{font-size:var(--step-3);margin-bottom:var(--s-2)}
+.empty p{color:var(--ink-soft);max-width:40ch;margin-inline:auto}
+
+@media (max-width:980px){
+  .results-layout{grid-template-columns:1fr}
+  .filters{position:static}
+  .hotel{grid-template-columns:200px 1fr}
+  .hotel-side{
+    grid-column:1/-1;flex-direction:row;align-items:center;justify-content:space-between;
+    border-left:0;border-top:1px solid var(--line);text-align:left;min-width:0
+  }
+  .price-unit{margin-bottom:0}
+}
+@media (max-width:620px){
+  .hotel{grid-template-columns:1fr}
+  .hotel .art{aspect-ratio:16/9}
+  .hotel-main{padding:var(--s-4) var(--s-4) 0}
+  .hotel-side{padding:var(--s-4);flex-wrap:wrap;gap:var(--s-3)}
+}
+
+/* ---------- 9. GARANTÍAS Y PRUEBA SOCIAL ---------- */
+/* Las promesas son tarjetas, no una lista suelta: sin superficie que
+   los contuviera, los cuatro bloques flotaban sobre el fondo y la
+   sección se leía como una enumeración, no como contenido con peso. */
+.promise-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:var(--s-4)}
+.promise{
+  display:flex;flex-direction:column;gap:var(--s-3);
+  background:var(--surface-raised);border:1px solid var(--line);
+  border-radius:var(--r-md);padding:var(--s-5);
+  box-shadow:var(--shadow-card);
+  transition:transform .2s,box-shadow .2s,border-color .2s
+}
+.promise:hover{transform:translateY(-3px);box-shadow:var(--shadow-float);border-color:var(--line-strong)}
+@media (prefers-reduced-motion:reduce){ .promise:hover{transform:none} }
+.promise .ico{
+  width:46px;height:46px;border-radius:var(--r-md);display:grid;place-items:center;
+  background:var(--brand-wash);color:var(--brand-deep);flex:none
+}
+.promise h3{font-size:var(--step-2);font-weight:700}
+.promise p{color:var(--ink-soft);font-size:var(--step-1)}
+
+.proof{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:var(--s-5);text-align:center}
+.proof-item{padding:var(--s-5) var(--s-3)}
+.proof-item b{display:block;font-family:var(--display);font-size:var(--step-5);font-weight:800;line-height:1;color:var(--brand)}
+.proof-item span{display:block;margin-top:var(--s-2);color:var(--ink-soft);font-size:var(--step-1)}
+.proof-src{text-align:center;margin-top:var(--s-5);font-size:var(--step-0);color:var(--ink-faint)}
+
+/* Dos cifras solas dejaban la sección medio vacía. Las citas no
+   sustituyen a los números: los acompañan, y ponen voz a lo que las
+   cifras solo insinúan. Van marcadas como ficticias en el pie. */
+.citas{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:var(--s-4);margin-top:var(--s-6)}
+.cita{
+  background:var(--surface-raised);border:1px solid var(--line);
+  border-radius:var(--r-md);padding:var(--s-5);text-align:left;
+  display:flex;flex-direction:column;gap:var(--s-3)
+}
+.cita blockquote{margin:0;font-size:var(--step-2);color:var(--ink);line-height:1.5}
+.cita blockquote::before{content:"\201C";color:var(--brand);font-family:var(--display);font-size:2rem;line-height:0;vertical-align:-.35em;margin-right:2px}
+.cita figcaption{display:flex;align-items:center;gap:9px;font-size:var(--step-0);color:var(--ink-faint);margin-top:auto}
+.cita figcaption b{color:var(--ink);font-weight:700}
+.cita-ini{
+  width:34px;height:34px;border-radius:var(--r-pill);flex:none;
+  display:grid;place-items:center;background:var(--brand-wash);color:var(--brand-deep);
+  font-weight:800;font-size:var(--step-0)
+}
+
+/* ---------- 10. PIE ---------- */
+.site-foot{background:var(--surface);color:var(--ink-soft);border-top:1px solid var(--line);padding-block:var(--s-8) var(--s-6)}
+.foot-grid{display:grid;grid-template-columns:1.6fr repeat(3,1fr);gap:var(--s-6)}
+.site-foot .logo{color:var(--ink)}
+.foot-about{color:var(--ink-soft);margin-top:var(--s-3);max-width:34ch;font-size:var(--step-1)}
+.foot-col h3{font-size:var(--step-0);font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:var(--s-3)}
+.foot-col ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+.foot-col a{color:var(--ink-soft);text-decoration:none;font-size:var(--step-1);transition:color .18s}
+.foot-col a:hover{color:var(--brand);text-decoration:underline;text-underline-offset:3px}
+.foot-base{
+  margin-top:var(--s-7);padding-top:var(--s-5);border-top:1px solid var(--line);
+  display:flex;justify-content:space-between;gap:var(--s-4);flex-wrap:wrap;
+  font-size:var(--step-0);color:var(--ink-faint)
+}
+.foot-credits{flex-basis:100%;max-width:none;opacity:.85}
+@media (max-width:780px){ .foot-grid{grid-template-columns:1fr 1fr} }
+@media (max-width:480px){ .foot-grid{grid-template-columns:1fr} }
+
+/* ============================================================
+   11. BOTONES COMPARTIDOS
+   Tres niveles: acción (sol), marca (verde) y contorno. El color
+   de acción aparece una sola vez por pantalla.
+   ============================================================ */
+.btn-brand,.btn-ghost,.btn-confirm,.btn-peligro{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  font-family:var(--body);font-weight:700;cursor:pointer;text-decoration:none;
+  border-radius:var(--r-sm);transition:background .18s,border-color .18s,color .18s
+}
+.btn-brand{background:var(--brand);color:#fff;border:0;padding:11px 20px;font-size:var(--step-1)}
+.btn-brand:hover{background:var(--brand-deep)}
+.btn-ghost{background:transparent;color:var(--ink);border:1px solid var(--line-strong);padding:10px 16px;font-size:var(--step-0)}
+.btn-ghost:hover{background:var(--brand-wash);border-color:var(--brand)}
+.btn-confirm{
+  background:var(--sun);color:var(--on-accent);border:0;width:100%;
+  padding:15px 20px;font-size:var(--step-2);border-radius:var(--r-md);margin-top:var(--s-4)
+}
+.btn-confirm:hover{background:var(--sun-deep)}
+.btn-confirm:disabled{opacity:.4;cursor:not-allowed}
+.btn-peligro{background:var(--danger);color:var(--danger-ink);border:0;padding:10px 16px;font-size:var(--step-0)}
+.btn-peligro:hover{filter:brightness(.92)}
+.ancho{width:100%;margin-top:var(--s-2)}
+[aria-disabled="true"]{opacity:.45;cursor:not-allowed}
+
+/* Cabecera: enlace a reservas con contador */
+.head-cta{display:inline-flex;align-items:center;gap:7px;text-decoration:none}
+.head-cta.activo{background:var(--brand-wash);border-color:var(--brand)}
+.head-count{
+  background:var(--brand);color:#fff;border-radius:var(--r-pill);
+  min-width:19px;height:19px;padding:0 5px;display:grid;place-items:center;
+  font-size:.6875rem;font-weight:700;font-variant-numeric:tabular-nums
+}
+
+/* ============================================================
+   12. BARRA DE COMPARACIÓN
+   ============================================================ */
+.compare-bar{
+  position:fixed;left:0;right:0;bottom:0;z-index:60;
+  background:var(--surface-raised);border-top:1px solid var(--line);
+  box-shadow:0 -8px 32px -16px rgba(11,46,43,.4);
+  padding-block:var(--s-3);
+  padding-bottom:calc(var(--s-3) + env(safe-area-inset-bottom,0px))
+}
+.compare-in{display:flex;align-items:center;justify-content:space-between;gap:var(--s-4);flex-wrap:wrap}
+.compare-txt{font-size:var(--step-1);color:var(--ink-soft)}
+.compare-txt b{color:var(--ink);font-weight:700;font-variant-numeric:tabular-nums}
+.compare-max{color:var(--ink-faint);font-size:var(--step-0)}
+.compare-acts{display:flex;gap:var(--s-2);align-items:center}
+body.con-barra{padding-bottom:84px}
+
+/* Casilla de comparar dentro de la tarjeta de hotel */
+.cmp{
+  display:inline-flex;align-items:center;gap:7px;margin-top:var(--s-3);
+  font-size:var(--step-0);font-weight:600;color:var(--ink-soft);cursor:pointer
+}
+.cmp input{width:16px;height:16px;accent-color:var(--brand);cursor:pointer}
+.cmp input:disabled{cursor:not-allowed}
+.cmp:has(input:disabled){opacity:.45;cursor:not-allowed}
+.hotel-link{text-decoration:none}
+.hotel-link:hover{text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--brand)}
+.menores{font-size:var(--step-0);color:var(--brand);font-weight:600}
+
+/* ============================================================
+   13. ESTRUCTURA DE PÁGINAS INTERIORES
+   ============================================================ */
+.crumbs{display:flex;align-items:center;gap:var(--s-2);padding-block:var(--s-5) 0;font-size:var(--step-0);color:var(--ink-faint)}
+.crumbs a{color:var(--ink-soft);text-decoration:none}
+.crumbs a:hover{color:var(--brand);text-decoration:underline;text-underline-offset:3px}
+.pagina-head{padding-block:var(--s-6) var(--s-5)}
+.pagina-head h1{font-size:var(--step-4);font-weight:700;max-width:22ch}
+.pagina-lead{color:var(--ink-soft);max-width:60ch;margin-top:var(--s-3);font-size:var(--step-2)}
+.seccion-tabla{padding-bottom:var(--s-9)}
+
+/* ---------- Ficha del hotel ---------- */
+.hotel-hero{display:grid;grid-template-columns:1.15fr 1fr;gap:var(--s-6);padding-block:var(--s-5) var(--s-7);align-items:center}
+
+.hh-info h1{font-size:var(--step-5);font-weight:800;margin-bottom:var(--s-3)}
+.hh-meta{display:flex;align-items:center;gap:9px;flex-wrap:wrap;font-size:var(--step-0);color:var(--ink-soft);margin-bottom:var(--s-4)}
+.hh-sep{color:var(--ink-faint)}
+.chip-rating{background:var(--brand);color:#fff;font-weight:700;border-radius:var(--r-sm);padding:4px 9px;font-size:var(--step-0)}
+.hh-desc{color:var(--ink-soft);font-size:var(--step-2);max-width:56ch}
+
+.detalle{display:grid;grid-template-columns:1fr 396px;gap:var(--s-7);align-items:start;padding-bottom:var(--s-9)}
+/* min-width:0 en los dos hijos: sin esto, el ancho mínimo del
+   contenido (los campos de fecha) ensancha la columna y la página
+   acaba desplazándose de lado en móvil. */
+.detalle-main{display:flex;flex-direction:column;gap:var(--s-7);min-width:0}
+.bloque h2{font-size:var(--step-3);font-weight:700;margin-bottom:var(--s-3)}
+.bloque-lead{color:var(--ink-soft);margin-bottom:var(--s-4);max-width:58ch}
+
+.lista-check{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--s-2)}
+.lista-check li{position:relative;padding-left:28px;color:var(--ink-soft)}
+.lista-check li::before{
+  content:"";position:absolute;left:0;top:7px;width:16px;height:16px;border-radius:50%;
+  background:var(--brand-wash);
+  box-shadow:inset 0 0 0 1px var(--brand)
+}
+.lista-check li.no{color:var(--ink-faint)}
+.lista-check li.no::before{background:transparent;box-shadow:inset 0 0 0 1px var(--line-strong)}
+.no-txt{font-size:.75rem;color:var(--ink-faint)}
+
+.distancias{margin:0}
+.dist-row{display:flex;justify-content:space-between;gap:var(--s-4);padding:12px 0;border-bottom:1px solid var(--line)}
+.dist-row:last-child{border-bottom:0}
+.dist-row dt{font-weight:700}
+.dist-row dd{margin:0;color:var(--ink-soft);text-align:right}
+
+.val-box{display:flex;gap:var(--s-4);align-items:flex-start}
+.val-num{background:var(--brand);color:#fff;border-radius:var(--r-md);padding:12px 16px;font-family:var(--display);font-size:var(--step-3);font-weight:800;flex:none}
+.val-box p{color:var(--ink-soft)}
+.val-src{font-size:var(--step-0);color:var(--ink-faint);margin-top:var(--s-2)}
+
+/* ---------- Caja de reserva ---------- */
+.reserva{
+  position:sticky;top:96px;background:var(--surface-raised);border:1px solid var(--line);
+  border-radius:var(--r-lg);padding:var(--s-5);box-shadow:var(--shadow-card);min-width:0
+}
+.reserva h2{font-size:var(--step-3);font-weight:700;margin-bottom:var(--s-4)}
+.r-sub{font-size:var(--step-0);font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-faint);margin:var(--s-5) 0 var(--s-3)}
+/* auto-fit: las dos fechas se apilan solas cuando no caben, sin
+   necesitar una consulta de medios extra. */
+.r-fechas{display:grid;grid-template-columns:repeat(auto-fit,minmax(138px,1fr));gap:var(--s-2)}
+.r-campo{display:flex;flex-direction:column;gap:5px;border:1px solid var(--line);border-radius:var(--r-md);padding:8px 12px;min-width:0}
+.r-campo label{font-size:.6875rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-faint)}
+.r-campo input{border:0;background:transparent;font-size:var(--step-1);font-weight:500;color:var(--ink);padding:2px 0;width:100%;cursor:pointer}
+.r-huespedes{border:1px solid var(--line);border-radius:var(--r-md);padding:4px 14px 12px;margin-top:var(--s-2)}
+
+.r-habs{display:flex;flex-direction:column;gap:var(--s-2)}
+.hab{
+  display:flex;align-items:center;gap:var(--s-3);cursor:pointer;
+  border:1px solid var(--line);border-radius:var(--r-md);padding:12px 14px;
+  transition:border-color .18s,background .18s
+}
+.hab:hover{border-color:var(--brand)}
+.hab:has(input:checked){border-color:var(--brand);background:var(--brand-wash)}
+.hab input{accent-color:var(--brand);width:18px;height:18px;flex:none;cursor:pointer}
+.hab-cuerpo{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
+.hab-nombre{font-weight:700}
+.hab-camas{font-size:var(--step-0);color:var(--ink-soft)}
+.hab-nota{font-size:.75rem;color:var(--ink-faint)}
+.hab-precio{font-family:var(--display);font-weight:800;font-size:var(--step-2);text-align:right;flex:none;display:flex;flex-direction:column}
+.hab-precio small{font-family:var(--body);font-size:.6875rem;font-weight:500;color:var(--ink-faint)}
+.hab-no{opacity:.5;cursor:not-allowed}
+.hab-no:hover{border-color:var(--line)}
+
+.desglose{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--s-3)}
+.desglose li{display:flex;justify-content:space-between;gap:var(--s-3);align-items:flex-start}
+.dg-con{display:block;font-weight:600;font-size:var(--step-1)}
+.dg-det{display:block;font-size:.75rem;color:var(--ink-faint);margin-top:2px}
+.desglose li b{white-space:nowrap;font-weight:700}
+.desglose li.gratis b{color:var(--brand)}
+
+.r-aviso{
+  margin-top:var(--s-4);padding:11px 14px;border-radius:var(--r-sm);
+  font-size:var(--step-0);background:var(--sunken);color:var(--ink-soft);
+  border-left:3px solid var(--line-strong)
+}
+.r-aviso.bien{border-left-color:var(--brand);color:var(--ink)}
+.r-aviso.error{border-left-color:var(--danger);color:var(--ink)}
+.r-total{
+  display:flex;justify-content:space-between;align-items:baseline;
+  margin-top:var(--s-5);padding-top:var(--s-4);border-top:1px solid var(--line)
+}
+.r-total span{font-weight:700}
+.r-total b{font-family:var(--display);font-size:var(--step-4);font-weight:800}
+.r-nota{font-size:var(--step-0);color:var(--ink-faint);margin-top:var(--s-1)}
+.r-legal{font-size:.75rem;color:var(--ink-faint);margin-top:var(--s-3);text-align:center}
+
+/* Confirmación */
+#reserva-ok{text-align:center}
+.ok-ico{color:var(--brand);display:grid;place-items:center;margin-bottom:var(--s-3)}
+.ok-cod{color:var(--ink-soft);font-size:var(--step-1);margin-bottom:var(--s-4)}
+.ok-cod b{font-variant-numeric:tabular-nums;color:var(--ink)}
+.ok-resumen{list-style:none;margin:0 0 var(--s-4);padding:0;display:flex;flex-direction:column;gap:var(--s-2);text-align:left}
+.ok-resumen li{display:flex;justify-content:space-between;gap:var(--s-3);padding:9px 0;border-bottom:1px solid var(--line);font-size:var(--step-0)}
+.ok-resumen li:last-child{border-bottom:0}
+.ok-resumen span{color:var(--ink-faint)}
+.ok-resumen b{text-align:right}
+
+@media (max-width:1040px){
+  .detalle{grid-template-columns:1fr}
+  .reserva{position:static;max-width:560px}
+}
+@media (max-width:820px){
+  .hotel-hero{grid-template-columns:1fr;padding-block:var(--s-4) var(--s-6)}
+}
+
+/* ============================================================
+   14. COMPARADOR
+   ============================================================ */
+.tabla-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r-md);background:var(--surface-raised)}
+.cmp-tabla{border-collapse:collapse;width:100%;min-width:640px}
+.cmp-tabla th,.cmp-tabla td{padding:14px 16px;text-align:left;vertical-align:middle;border-bottom:1px solid var(--line)}
+.cmp-tabla tbody th{
+  width:190px;font-weight:700;font-size:var(--step-0);color:var(--ink);
+  background:var(--sunken);position:sticky;left:0;z-index:2
+}
+.cmp-nota{display:block;font-weight:400;font-size:.75rem;color:var(--ink-faint);margin-top:3px}
+.cmp-esq{background:var(--sunken);position:sticky;left:0;z-index:3}
+.cmp-tabla thead th{vertical-align:bottom;border-bottom:2px solid var(--line-strong);background:var(--surface-raised)}
+.cmp-media{aspect-ratio:16/10;border-radius:var(--r-sm);margin-bottom:var(--s-3);min-width:150px}
+.cmp-nombre{display:block;font-family:var(--display);font-size:var(--step-2);font-weight:700;letter-spacing:-.02em;text-decoration:none}
+.cmp-nombre:hover{text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--brand)}
+.cmp-dest{display:block;font-size:var(--step-0);color:var(--ink-faint);font-weight:400;margin-top:2px}
+.cmp-precio{font-family:var(--display);font-size:var(--step-3);font-weight:800;display:block}
+.cmp-edad{font-family:var(--display);font-size:var(--step-2);font-weight:700;display:block}
+.cmp-sub{display:block;font-size:.75rem;color:var(--ink-faint);margin-top:3px}
+.cmp-tabla td.gana{background:var(--brand-wash);position:relative}
+.cmp-tag{
+  display:inline-block;margin-top:6px;background:var(--brand);color:#fff;
+  border-radius:var(--r-pill);padding:2px 9px;font-size:.6875rem;font-weight:700
+}
+.si-ico{color:var(--brand);font-weight:700;font-size:1.125rem}
+.no-ico{color:var(--ink-faint);font-size:1.125rem}
+.cmp-pie{display:flex;gap:var(--s-3);margin-top:var(--s-5);flex-wrap:wrap}
+
+/* ============================================================
+   15. MIS RESERVAS
+   ============================================================ */
+.res-tabs{display:flex;gap:6px;margin-bottom:var(--s-5);flex-wrap:wrap}
+.res-tabs .chip[aria-selected="true"]{background:var(--brand);border-color:var(--brand);color:#fff}
+.res-grid{display:flex;flex-direction:column;gap:var(--s-4)}
+.res-card{
+  display:grid;grid-template-columns:200px 1fr auto;gap:var(--s-5);
+  background:var(--surface-raised);border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden
+}
+.res-cancelada{opacity:.72}
+.res-art{aspect-ratio:4/3;max-width:100%}
+.res-cuerpo{padding:var(--s-5) 0;min-width:0}
+.res-top{display:flex;align-items:center;gap:var(--s-3);margin-bottom:var(--s-2);flex-wrap:wrap}
+.res-estado{border-radius:var(--r-pill);padding:4px 11px;font-size:.6875rem;font-weight:700}
+.es-ok{background:var(--brand-wash);color:var(--brand-deep)}
+.es-cancel{background:var(--sunken);color:var(--ink-soft)}
+.res-codigo{font-size:var(--step-0);color:var(--ink-faint);font-weight:600}
+.res-cuerpo h2{font-size:var(--step-3);font-weight:700;margin-bottom:2px}
+.res-cuerpo h2 a{text-decoration:none}
+.res-cuerpo h2 a:hover{text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--brand)}
+.res-dest{font-size:var(--step-0);color:var(--ink-faint);margin-bottom:var(--s-3)}
+.res-datos{margin:0;display:flex;flex-direction:column;gap:6px}
+.res-datos div{display:flex;gap:var(--s-3);font-size:var(--step-0)}
+.res-datos dt{color:var(--ink-faint);min-width:88px;flex:none}
+.res-datos dd{margin:0;color:var(--ink-soft)}
+.res-edades{font-size:.75rem;color:var(--ink-faint);margin-top:var(--s-2)}
+.res-lado{
+  padding:var(--s-5);display:flex;flex-direction:column;align-items:flex-end;justify-content:center;
+  gap:var(--s-1);border-left:1px solid var(--line);background:var(--sunken);min-width:210px;text-align:right
+}
+.res-lado .btn-ghost{margin-top:var(--s-3)}
+.res-confirm{margin-top:var(--s-3);text-align:right}
+.res-confirm p{font-size:var(--step-0);color:var(--ink);font-weight:600;margin-bottom:var(--s-2)}
+.res-confirm-btns{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}
+
+@media (max-width:900px){
+  .res-card{grid-template-columns:160px 1fr}
+  .res-lado{
+    grid-column:1/-1;flex-direction:row;align-items:center;justify-content:space-between;
+    border-left:0;border-top:1px solid var(--line);text-align:left;min-width:0;flex-wrap:wrap
+  }
+  .res-lado .btn-ghost,.res-confirm{margin-top:0}
+  .res-confirm{text-align:left}
+}
+@media (max-width:620px){
+  .res-card{grid-template-columns:1fr}
+  .res-art{aspect-ratio:16/9}
+  .res-cuerpo{padding:var(--s-4) var(--s-4) 0}
+  .res-lado{padding:var(--s-4)}
+}
+
+/* ============================================================
+   16. GALERÍA, VISOR Y RESEÑAS POR CATEGORÍA
+   ============================================================ */
+.galeria{display:flex;flex-direction:column;gap:var(--s-2);min-width:0}
+.gal-principal{
+  position:relative;aspect-ratio:16/10;width:100%;border:0;padding:0;cursor:zoom-in;
+  border-radius:var(--r-lg);overflow:hidden;background:var(--sunken);display:block
+}
+.gal-principal:hover .gal-pie{background:linear-gradient(transparent,rgba(17,17,17,.88))}
+.gal-pie{
+  position:absolute;left:0;right:0;bottom:0;z-index:3;
+  display:flex;align-items:center;justify-content:space-between;gap:var(--s-3);
+  padding:26px 14px 11px;color:#fff;font-size:var(--step-0);font-weight:600;text-align:left;
+  background:linear-gradient(transparent,rgba(17,17,17,.8));transition:background .2s
+}
+.gal-cuenta{opacity:.9;font-weight:500;flex:none}
+/* En la ficha, el pie de foto ocupa todo el borde inferior, así que la
+   etiqueta de entorno sube a la esquina superior derecha: abajo queda
+   tapada por el pie. El distintivo de oferta ya ocupa la izquierda. */
+.gal-principal .entorno{top:10px;right:10px;bottom:auto;left:auto}
+.gal-tiras{display:grid;grid-template-columns:repeat(5,1fr);gap:var(--s-2)}
+.gal-mini{
+  position:relative;aspect-ratio:4/3;border:0;padding:0;cursor:pointer;overflow:hidden;
+  border-radius:var(--r-sm);background:var(--sunken);
+  outline:2px solid transparent;outline-offset:-2px;
+  opacity:.72;transition:opacity .18s,outline-color .18s
+}
+.gal-mini:hover{opacity:1}
+.gal-mini[aria-selected="true"]{opacity:1;outline-color:var(--brand)}
+
+/* Visor */
+body.sin-scroll{overflow:hidden}
+.visor{
+  position:fixed;inset:0;z-index:200;background:rgba(17,17,17,.93);
+  display:grid;place-items:center;padding:var(--s-4)
+}
+.visor-caja{
+  position:relative;width:min(1100px,100%);
+  display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:var(--s-3)
+}
+.visor-media{aspect-ratio:16/10;width:100%;border-radius:var(--r-md);overflow:hidden;background:#222}
+.visor-nav,.visor-cerrar{
+  border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.1);color:#fff;
+  border-radius:50%;width:44px;height:44px;display:grid;place-items:center;cursor:pointer;
+  transition:background .18s
+}
+.visor-nav:hover,.visor-cerrar:hover{background:rgba(255,255,255,.22)}
+.visor-cerrar{position:absolute;top:-56px;right:0;z-index:2}
+.visor-pie{
+  grid-column:2;text-align:center;color:#fff;font-size:var(--step-1);font-weight:600;margin-top:var(--s-3)
+}
+.visor-pie .num{color:rgba(255,255,255,.72);font-weight:500}
+@media (max-width:700px){
+  .visor-caja{grid-template-columns:1fr}
+  .visor-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:2}
+  .visor-prev{left:8px} .visor-next{right:8px}
+  .visor-pie{grid-column:1}
+}
+
+/* Reseñas por categoría */
+.notas{margin:var(--s-5) 0 0;display:grid;grid-template-columns:1fr 1fr;gap:var(--s-3) var(--s-6)}
+.nota-fila{display:flex;flex-direction:column;gap:5px;min-width:0}
+.nota-fila dt{font-size:var(--step-0);color:var(--ink-soft);font-weight:600}
+.nota-fila dd{margin:0;display:flex;align-items:center;gap:var(--s-3)}
+.nota-barra{flex:1;height:7px;border-radius:var(--r-pill);background:var(--sunken);overflow:hidden;min-width:0}
+.nota-relleno{display:block;height:100%;border-radius:var(--r-pill);background:var(--brand)}
+.nota-fila b{font-size:var(--step-0);font-weight:700;flex:none;min-width:24px;text-align:right}
+@media (max-width:560px){ .notas{grid-template-columns:1fr} }
+
+/* ============================================================
+   17. DISTRIBUCIÓN DE PRECIOS
+   ============================================================ */
+.histo{
+  display:flex;align-items:flex-end;gap:2px;height:44px;margin-bottom:6px;
+  padding:0 1px
+}
+.histo-barra{
+  flex:1;min-width:0;border-radius:3px 3px 0 0;background:var(--brand);
+  transition:background .18s,opacity .18s
+}
+/* Los tramos por encima del tope se apagan en vez de desaparecer:
+   así se ve cuánta oferta se está dejando fuera. */
+.histo-barra.fuera{background:var(--line-strong);opacity:.4}
+/* Un tramo sin hoteles se dibuja como marca de base, no como barra
+   corta: una barra teal de 3px se lee como si hubiera algo. */
+.histo-barra.vacio{background:var(--line);opacity:1;border-radius:2px}
+.histo-resumen{margin-top:6px;font-size:.75rem;color:var(--ink-faint)}
+
+/* ============================================================
+   18. VISTA DE MAPA
+   ============================================================ */
+.bar-acts{display:flex;align-items:center;gap:var(--s-4);flex-wrap:wrap}
+.vista-toggle{display:inline-flex;border:1px solid var(--line-strong);border-radius:var(--r-pill);padding:3px;gap:2px}
+.vt{
+  display:inline-flex;align-items:center;gap:6px;border:0;background:transparent;color:var(--ink-soft);
+  border-radius:var(--r-pill);padding:6px 13px;font-size:var(--step-0);font-weight:700;cursor:pointer;
+  transition:background .18s,color .18s
+}
+.vt:hover{color:var(--ink)}
+.vt[aria-pressed="true"]{background:var(--brand);color:#fff}
+
+.mapa-caja{
+  position:relative;aspect-ratio:100/64;width:100%;border:1px solid var(--line);
+  border-radius:var(--r-md);overflow:hidden;background:var(--sunken)
+}
+.mapa-svg{width:100%;height:100%;display:block}
+/* Los hitos van en HTML sobre el mapa: tamaño de letra constante en
+   cualquier ancho, a diferencia de un <text> dentro del viewBox. */
+.hito{
+  position:absolute;transform:translate(-50%,-50%);z-index:1;
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  pointer-events:none;color:var(--ink-soft)
+}
+.hito-ico{
+  width:26px;height:26px;border-radius:50%;display:grid;place-items:center;
+  background:var(--surface-raised);box-shadow:var(--shadow-card);color:var(--brand)
+}
+.hito-txt{
+  font-size:.6875rem;font-weight:700;color:var(--ink);
+  background:color-mix(in srgb,var(--surface-raised) 88%,transparent);
+  padding:1px 6px;border-radius:var(--r-pill);white-space:nowrap
+}
+.pin{
+  position:absolute;transform:translate(-50%,-50%);z-index:2;
+  background:var(--surface-raised);color:var(--ink);border:1px solid var(--line-strong);
+  border-radius:var(--r-pill);padding:5px 11px;font-size:var(--step-0);font-weight:700;
+  cursor:pointer;box-shadow:var(--shadow-card);white-space:nowrap;
+  transition:background .18s,color .18s,border-color .18s,transform .18s
+}
+.pin:hover{border-color:var(--brand);transform:translate(-50%,-50%) scale(1.06)}
+.pin-sel{background:var(--brand);color:#fff;border-color:var(--brand)}
+
+.pin-card{
+  position:absolute;z-index:5;width:min(280px,72vw);
+  transform:translate(14px,-50%);
+  background:var(--surface-raised);border:1px solid var(--line);border-radius:var(--r-md);
+  box-shadow:var(--shadow-float);overflow:hidden;display:flex;gap:var(--s-3);padding:var(--s-3)
+}
+.pin-card-izq{transform:translate(calc(-100% - 14px),-50%)}
+.pin-card-x{
+  position:absolute;top:4px;right:6px;border:0;background:transparent;color:var(--ink-faint);
+  font-size:1.125rem;line-height:1;cursor:pointer;padding:4px 6px;border-radius:var(--r-sm)
+}
+.pin-card-x:hover{background:var(--sunken);color:var(--ink)}
+.pin-card-art{width:76px;aspect-ratio:1;border-radius:var(--r-sm);flex:none}
+.pin-card-txt{display:flex;flex-direction:column;gap:4px;min-width:0;padding-right:16px}
+.pin-card-txt b{font-size:var(--step-1);line-height:1.25}
+.pin-card-meta{display:flex;align-items:center;gap:6px;font-size:.75rem;color:var(--ink-faint);flex-wrap:wrap}
+.pin-card-precio{font-family:var(--display);font-weight:800;font-size:var(--step-2)}
+.pin-card-precio small{font-family:var(--body);font-size:.6875rem;font-weight:500;color:var(--ink-faint)}
+.pin-card .btn-brand{margin-top:4px;padding:8px 14px;font-size:var(--step-0)}
+
+.mapa-nota{margin-top:var(--s-3);font-size:var(--step-0);color:var(--ink-faint)}
+.mapa-picks{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:var(--s-4)}
+
+@media (max-width:620px){
+  .mapa-caja{aspect-ratio:4/5}
+  .pin{padding:4px 9px;font-size:.75rem}
+  .pin-card,.pin-card-izq{
+    position:static;transform:none;width:100%;margin-top:var(--s-3);box-shadow:var(--shadow-card)
+  }
+  .bar-acts{width:100%;justify-content:space-between}
+}
+
+
+/* ============================================================
+   19. CUENTA
+   Ventana de acceso (<dialog> nativo: trae Escape, foco atrapado
+   y capa de fondo), botones de la cabecera, aviso flotante y el
+   banner para pasar reservas locales a la cuenta.
+   ============================================================ */
+.head-auth{display:flex;align-items:center;gap:var(--s-3);flex:none}
+.head-user{
+  font-size:var(--step-0);color:var(--ink-soft);
+  max-width:16ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap
+}
+.head-user b{color:var(--ink);font-weight:700}
+@media (max-width:820px){ .head-in > .head-cta{margin-left:auto} }
+@media (max-width:560px){ .head-user{display:none} }
+
+.auth{
+  border:0;padding:0;background:transparent;color:var(--ink);
+  width:min(440px,calc(100vw - 32px));max-width:none;max-height:calc(100dvh - 32px);
+  margin:auto;overflow:visible
+}
+.auth::backdrop{background:rgba(17,17,17,.55)}
+.auth-caja{
+  position:relative;background:var(--surface-raised);border-radius:var(--r-lg);
+  box-shadow:var(--shadow-float);padding:var(--s-6) var(--s-5) var(--s-5);
+  max-height:calc(100dvh - 32px);overflow-y:auto
+}
+.auth-caja h2{font-size:var(--step-4);margin-bottom:var(--s-4)}
+.auth-x{
+  position:absolute;top:var(--s-3);right:var(--s-3);width:36px;height:36px;
+  display:grid;place-items:center;border:0;border-radius:var(--r-pill);
+  background:transparent;color:var(--ink-faint);cursor:pointer
+}
+.auth-x:hover{background:var(--sunken);color:var(--ink)}
+.auth-tabs{
+  display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;
+  background:var(--sunken);border-radius:var(--r-md);margin-bottom:var(--s-4)
+}
+.auth-tabs button{
+  border:0;background:transparent;padding:9px 12px;border-radius:var(--r-sm);
+  font-weight:700;font-size:var(--step-0);color:var(--ink-soft);cursor:pointer
+}
+.auth-tabs button[aria-selected="true"]{background:var(--surface-raised);color:var(--ink);box-shadow:var(--shadow-card)}
+.auth-campo{display:flex;flex-direction:column;gap:5px;margin-bottom:var(--s-3)}
+.auth-campo label{
+  font-size:.6875rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-faint)
+}
+.auth-campo input{
+  width:100%;padding:11px 12px;border:1px solid var(--line-strong);border-radius:var(--r-sm);
+  background:var(--surface-raised);font-size:var(--step-2)   /* 17px: evita el zoom de iOS al enfocar */
+}
+.auth-ayuda{font-size:.75rem;color:var(--ink-faint)}
+.auth-texto{color:var(--ink-soft);margin-bottom:var(--s-3)}
+.auth-suave{font-size:var(--step-0);color:var(--ink-faint)}
+#auth-revisa{text-align:center}
+#auth-revisa .ok-ico{margin-inline:auto}
+
+.auth-aviso{
+  position:fixed;left:50%;bottom:calc(var(--s-5) + env(safe-area-inset-bottom,0px));z-index:120;
+  transform:translate(-50%,16px);opacity:0;pointer-events:none;
+  max-width:min(440px,calc(100vw - 32px));padding:12px 18px;border-radius:var(--r-md);
+  background:var(--ink);color:#fff;font-size:var(--step-1);box-shadow:var(--shadow-float);
+  transition:opacity .2s,transform .2s
+}
+.auth-aviso.visible{opacity:1;transform:translate(-50%,0)}
+.auth-aviso.es-error{background:var(--danger)}
+@media (prefers-reduced-motion:reduce){ .auth-aviso{transition:none} }
+
+.res-migrar{
+  display:flex;align-items:center;justify-content:space-between;gap:var(--s-4);flex-wrap:wrap;
+  padding:var(--s-4) var(--s-5);margin-bottom:var(--s-5);border-radius:var(--r-md);
+  background:var(--brand-wash);border-left:3px solid var(--brand)
+}
+.res-migrar p{flex:1 1 260px;color:var(--ink-soft)}
+.res-migrar b{color:var(--ink)}
+.res-migrar button:disabled{opacity:.6;cursor:progress}
+
+
+/* ============================================================
+   20. FAVORITOS Y HOTELES PARECIDOS
+   ============================================================ */
+
+/* El corazón se apoya sobre la foto, así que lleva su propio velo:
+   sin él, sobre una foto clara el contorno blanco desaparece. */
+.fav{
+  position:absolute;top:10px;right:10px;z-index:3;
+  width:38px;height:38px;border:0;border-radius:var(--r-pill);
+  display:grid;place-items:center;cursor:pointer;
+  background:rgba(17,17,17,.55);backdrop-filter:blur(6px);color:#fff;
+  transition:background .18s,transform .18s,color .18s
+}
+.fav:hover{background:rgba(17,17,17,.75);transform:scale(1.08)}
+.fav:active{transform:scale(.96)}
+.fav[aria-pressed="true"]{color:#FF5A6E}
+.fav:disabled{opacity:.6;cursor:progress}
+.fav svg{display:block}
+@media (prefers-reduced-motion:reduce){ .fav:hover,.fav:active{transform:none} }
+
+/* En la ficha el corazón no va sobre la foto sino junto al título,
+   con etiqueta visible: ahí hay sitio y el icono solo se queda corto. */
+.hh-acciones{margin-top:var(--s-5)}
+.fav-txt{
+  position:static;width:auto;height:auto;gap:8px;
+  display:inline-flex;align-items:center;
+  padding:10px 18px;font-weight:700;font-size:var(--step-0);
+  background:transparent;color:var(--ink);border:1px solid var(--line-strong);
+  backdrop-filter:none
+}
+.fav-txt:hover{background:var(--brand-wash);border-color:var(--brand);color:var(--ink)}
+.fav-txt[aria-pressed="true"]{color:#C02B3D;border-color:currentColor;background:#FFF1F3}
+
+/* Parrilla compartida por «También te puede interesar» y por los
+   hoteles guardados: misma tarjeta, dos sitios. */
+.sim-grid,.fav-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--s-5)}
+.sim,.fav-card{
+  position:relative;display:flex;flex-direction:column;
+  background:var(--surface-raised);border:1px solid var(--line);
+  border-radius:var(--r-md);overflow:hidden;
+  transition:border-color .2s,box-shadow .2s,transform .2s
+}
+.sim:hover,.fav-card:hover{border-color:var(--line-strong);box-shadow:var(--shadow-card);transform:translateY(-2px)}
+@media (prefers-reduced-motion:reduce){ .sim:hover,.fav-card:hover{transform:none} }
+.sim-art,.fav-art{display:block;aspect-ratio:16/10;text-decoration:none}
+.sim-cuerpo,.fav-cuerpo{display:flex;flex-direction:column;gap:6px;padding:var(--s-4)}
+.sim-cuerpo h3,.fav-cuerpo h3{font-size:var(--step-2);font-weight:700;line-height:1.25}
+.sim-cuerpo h3 a,.fav-cuerpo h3 a{text-decoration:none}
+.sim-cuerpo h3 a:hover,.fav-cuerpo h3 a:hover{text-decoration:underline;text-underline-offset:3px}
+.sim-loc,.fav-loc{font-size:var(--step-0);color:var(--ink-faint)}
+/* Por qué aparece este hotel aquí: sin el motivo, la sección parece
+   relleno. Con él, el usuario sabe qué criterio está viendo. */
+.sim-por{
+  align-self:flex-start;font-size:.6875rem;font-weight:700;
+  background:var(--brand-wash);color:var(--brand-deep);
+  border-radius:var(--r-pill);padding:3px 10px
+}
+.sim-precio,.fav-precio{margin-top:var(--s-2);font-size:var(--step-0);color:var(--ink-faint)}
+.sim-precio b,.fav-precio b{font-family:var(--display);font-size:var(--step-3);font-weight:800;color:var(--ink);display:block}
+.fav-cuerpo .btn-ghost{margin-top:var(--s-3);justify-content:center}
+.bloque-similares{padding-bottom:var(--s-9)}
+#seccion-favoritos{margin-top:var(--s-8)}
+
+
+/* ============================================================
+   21. MAPA REAL (Leaflet)
+   El marcador y el globo se visten con los tokens del sitio: por
+   defecto Leaflet trae su propio azul y sus esquinas, y el mapa
+   parecería incrustado desde otra página.
+   ============================================================ */
+.mapa-lienzo{
+  width:100%;height:clamp(380px,58vh,620px);
+  border:1px solid var(--line);border-radius:var(--r-md);
+  background:var(--sunken);z-index:0
+}
+.mapa-lienzo:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+
+/* Mismo pastillero de precio que el plano esquemático. El marcador de
+   Leaflet ancla en su esquina, así que se recoloca sobre el punto. */
+.lpin{
+  display:inline-block;transform:translate(-50%,-50%);
+  background:var(--surface-raised);color:var(--ink);border:1px solid var(--line-strong);
+  border-radius:var(--r-pill);padding:5px 11px;font-size:var(--step-0);font-weight:700;
+  box-shadow:var(--shadow-card);white-space:nowrap;
+  transition:background .18s,color .18s,border-color .18s,transform .18s
+}
+.leaflet-marker-icon:hover .lpin{border-color:var(--brand);transform:translate(-50%,-50%) scale(1.06)}
+.lpin-sel,.leaflet-marker-icon:focus .lpin{background:var(--brand);color:#fff;border-color:var(--brand)}
+@media (prefers-reduced-motion:reduce){ .leaflet-marker-icon:hover .lpin{transform:translate(-50%,-50%)} }
+
+.leaflet-popup-content-wrapper{border-radius:var(--r-md);box-shadow:var(--shadow-float);padding:0}
+.leaflet-popup-content{margin:0;width:auto!important;font-family:var(--body)}
+.leaflet-popup-tip{box-shadow:none}
+.leaflet-container{font-family:var(--body);font-size:var(--step-0)}
+.leaflet-container a.leaflet-popup-close-button{color:var(--ink-faint);padding:8px 8px 0 0}
+.leaflet-container a.leaflet-popup-close-button:hover{color:var(--ink);background:transparent}
+
+.lpop{display:flex;flex-direction:column;gap:5px;padding:var(--s-4)}
+.lpop-nom{font-family:var(--display);font-size:var(--step-2);font-weight:700;line-height:1.2;padding-right:16px}
+.lpop-loc{color:var(--ink-faint)}
+.lpop-meta{display:flex;align-items:center;gap:7px;color:var(--ink-soft);flex-wrap:wrap}
+.lpop-precio{margin-top:var(--s-2);color:var(--ink-faint)}
+.lpop-precio b{font-family:var(--display);font-size:var(--step-3);font-weight:800;color:var(--ink)}
+.lpop .btn-brand{margin-top:var(--s-3);justify-content:center;padding:9px 16px;font-size:var(--step-0)}

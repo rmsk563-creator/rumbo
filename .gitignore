@@ -1,0 +1,4 @@
+# Metadatos que siembra macOS en cualquier carpeta abierta en Finder.
+.DS_Store
+
+# Este proyecto no tiene build ni dependencias: no hay nada más que excluir.

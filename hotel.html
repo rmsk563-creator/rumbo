@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ficha del hotel — Rumbo</title>
+<meta name="description" content="Detalle del hotel: servicios, política de menores, distancias reales y desglose del precio según la edad de cada niño.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://images.unsplash.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-head">
+  <div class="wrap head-in">
+    <a class="logo" href="index.html">
+      <svg width="26" height="26" viewBox="0 0 26 26" fill="none" aria-hidden="true">
+        <circle cx="13" cy="13" r="12" fill="#0D7A75"/>
+        <path d="M17.6 8.4 11.3 11.3 8.4 17.6 14.7 14.7z" fill="#F5A524"/>
+      </svg>
+      Rumbo
+    </a>
+    <nav class="nav" aria-label="Principal">
+      <a href="index.html#destinos">Destinos</a>
+      <a href="index.html#resultados">Hoteles</a>
+      <a href="index.html#garantias">Por qué Rumbo</a>
+    </nav>
+    <a class="head-cta" href="reservas.html">
+      Mis reservas
+      <span class="head-count" data-contador-reservas hidden></span>
+    </a>
+  </div>
+</header>
+
+<main id="pagina">
+
+  <!-- Estado de error: el id de la URL no corresponde a ningún hotel -->
+  <section class="wrap section" id="no-encontrado" hidden>
+    <div class="empty">
+      <h3>No encontramos ese hotel</h3>
+      <p>El enlace puede estar incompleto o el hotel ya no está en el listado.</p>
+      <p style="margin-top:16px"><a class="btn-brand" href="index.html#resultados">Volver a los resultados</a></p>
+    </div>
+  </section>
+
+  <div id="ficha" hidden>
+    <nav class="crumbs wrap" aria-label="Ruta">
+      <a href="index.html">Inicio</a>
+      <span aria-hidden="true">›</span>
+      <a id="crumb-destino" href="index.html#resultados">Destino</a>
+      <span aria-hidden="true">›</span>
+      <span id="crumb-hotel" aria-current="page">Hotel</span>
+    </nav>
+
+    <section class="wrap hotel-hero">
+      <div class="galeria">
+        <button class="gal-principal art" type="button" id="gal-principal"
+                aria-label="Ampliar la foto"></button>
+        <div class="gal-tiras" id="gal-tiras" role="tablist" aria-label="Fotos del hotel"></div>
+      </div>
+      <div class="hh-info">
+        <p class="eyebrow" id="hh-destino"></p>
+        <h1 id="hh-nombre"></h1>
+        <p class="hh-meta" id="hh-meta"></p>
+        <p class="hh-desc" id="hh-desc"></p>
+        <div class="hh-acciones" id="hh-acciones"></div>
+      </div>
+    </section>
+
+    <section class="wrap detalle">
+      <div class="detalle-main">
+
+        <article class="bloque" id="bloque-menores">
+          <h2>Política de menores</h2>
+          <p class="bloque-lead" id="menores-lead"></p>
+          <ul class="lista-check" id="menores-lista"></ul>
+        </article>
+
+        <article class="bloque">
+          <h2>Distancias reales</h2>
+          <p class="bloque-lead">Con niños, veinte minutos no es lo mismo que dos. Estos son los tiempos puerta a puerta.</p>
+          <dl class="distancias" id="distancias"></dl>
+        </article>
+
+        <article class="bloque">
+          <h2>Servicios</h2>
+          <ul class="lista-check" id="servicios-lista"></ul>
+        </article>
+
+        <article class="bloque">
+          <h2>Valoración</h2>
+          <div class="val-box">
+            <b class="val-num num" id="val-num"></b>
+            <div>
+              <p id="val-txt"></p>
+              <p class="val-src">Las reseñas se consultan en su ficha original de TripAdvisor y Google Maps. Rumbo no aloja reseñas propias.</p>
+            </div>
+          </div>
+          <dl class="notas" id="notas"></dl>
+        </article>
+      </div>
+
+      <!-- Caja de reserva -->
+      <aside class="reserva" aria-labelledby="reserva-t">
+        <div id="reserva-form">
+          <h2 id="reserva-t">Tu reserva</h2>
+
+          <div class="r-fechas">
+            <div class="r-campo">
+              <label for="r-entrada">Entrada</label>
+              <input type="date" id="r-entrada">
+            </div>
+            <div class="r-campo">
+              <label for="r-salida">Salida</label>
+              <input type="date" id="r-salida">
+            </div>
+          </div>
+
+          <div class="r-huespedes" id="r-huespedes">
+            <div class="guest-row">
+              <div><strong>Adultos</strong><span>Desde 18 años</span></div>
+              <div class="stepper">
+                <button type="button" data-step="adultos" data-dir="-1" aria-label="Quitar un adulto">−</button>
+                <output id="r-out-adultos" aria-live="polite">2</output>
+                <button type="button" data-step="adultos" data-dir="1" aria-label="Añadir un adulto">+</button>
+              </div>
+            </div>
+            <div class="guest-row">
+              <div><strong>Niños</strong><span>De 0 a 17 años</span></div>
+              <div class="stepper">
+                <button type="button" data-step="ninos" data-dir="-1" aria-label="Quitar un niño">−</button>
+                <output id="r-out-ninos" aria-live="polite">1</output>
+                <button type="button" data-step="ninos" data-dir="1" aria-label="Añadir un niño">+</button>
+              </div>
+            </div>
+            <div class="ages" id="r-ages-block">
+              <p>La edad decide si el menor paga. Cámbiala y mira el desglose.</p>
+              <div class="ages-grid" id="r-ages-grid"></div>
+            </div>
+          </div>
+
+          <h3 class="r-sub">Tipo de habitación</h3>
+          <div class="r-habs" id="r-habs" role="radiogroup" aria-label="Tipo de habitación"></div>
+
+          <h3 class="r-sub">Desglose</h3>
+          <ul class="desglose" id="desglose"></ul>
+
+          <p class="r-aviso" id="r-aviso" hidden></p>
+
+          <div class="r-total">
+            <span>Total</span>
+            <b class="num" id="r-total">USD 0</b>
+          </div>
+          <p class="r-nota">Impuestos incluidos. Cancelación gratuita hasta 48 h antes.</p>
+
+          <p class="r-aviso error" id="r-error" role="alert" hidden></p>
+          <button class="btn-confirm" type="button" id="btn-confirmar">Confirmar reserva</button>
+          <p class="r-legal">Es un proyecto de práctica: no se pide ningún dato de pago y no se cobra nada.</p>
+        </div>
+
+        <!-- Confirmación: reemplaza al formulario tras reservar -->
+        <div id="reserva-ok" hidden>
+          <div class="ok-ico" aria-hidden="true">
+            <svg width="30" height="30" viewBox="0 0 30 30" fill="none">
+              <circle cx="15" cy="15" r="13" stroke="currentColor" stroke-width="2"/>
+              <path d="m9.5 15.5 3.8 3.8L21 11.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h2>Reserva confirmada</h2>
+          <p class="ok-cod">Código <b id="ok-codigo"></b></p>
+          <ul class="ok-resumen" id="ok-resumen"></ul>
+          <a class="btn-confirm" href="reservas.html">Ver mis reservas</a>
+          <button class="btn-ghost ancho" type="button" id="btn-otra">Reservar otra habitación</button>
+        </div>
+      </aside>
+    </section>
+
+    <!-- Hoteles parecidos. Se calculan cruzando HOTELES: mismo destino
+         primero y, si no llegan a tres, precio parecido. -->
+    <section class="wrap bloque-similares" id="similares" hidden>
+      <div class="sec-head">
+        <div>
+          <p class="eyebrow">Sigue mirando</p>
+          <h2>También te puede interesar</h2>
+        </div>
+      </div>
+      <div class="sim-grid" id="sim-grid"></div>
+    </section>
+  </div>
+</main>
+
+<!-- Visor de foto ampliada. Se abre desde la galería y se cierra con
+     Escape, con el botón o pulsando fuera de la imagen. -->
+<div class="visor" id="visor" hidden role="dialog" aria-modal="true" aria-labelledby="visor-pie">
+  <div class="visor-caja">
+    <button class="visor-cerrar" type="button" id="visor-cerrar" aria-label="Cerrar el visor">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
+    <button class="visor-nav visor-prev" type="button" id="visor-prev" aria-label="Foto anterior">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
+        <path d="M13.5 4 6.5 11l7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <div class="visor-media art" id="visor-media"></div>
+    <button class="visor-nav visor-next" type="button" id="visor-next" aria-label="Foto siguiente">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden="true">
+        <path d="M8.5 4l7 7-7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <p class="visor-pie" id="visor-pie"></p>
+  </div>
+</div>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-base">
+      <span>© 2026 Rumbo. Proyecto de práctica, no es un servicio real.</span>
+      <span><a href="index.html">Inicio</a> · <a href="reservas.html">Mis reservas</a></span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="datos.js"></script>
+<script src="auth.js"></script>
+<script src="hotel.js"></script>
+</body>
+</html>
