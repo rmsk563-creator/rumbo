@@ -48,6 +48,18 @@ No se usan módulos ES a propósito: con `import` el navegador bloquea los archi
 
 **Plano esquemático de respaldo** (`pintarMapaEsquematico` en `inicio.js`, `mapaBase` y `LUGARES` en `datos.js`). SVG puro, sin peticiones externas. Se usa solo si Leaflet no carga. Los hitos y los pines van en HTML sobre el SVG, no dentro de él: un `<text>` en un viewBox de 100 unidades escala con el mapa y acaba enorme en escritorio e ilegible en móvil.
 
+## El hotel patrocinado
+
+Un hotel del listado lleva `patrocinado:true` en `datos.js` y ocupa siempre la tercera posición de los resultados, sea cual sea el orden elegido. Es contenido pagado, y el listado lo dice en la propia tarjeta en vez de en una nota al pie: si hay que buscar el aviso, el aviso no está hecho para leerse.
+
+Dos reglas lo mantienen honesto, y están en `conPatrocinado` de `inicio.js`:
+
+**Se mueve, no se añade.** Sigue contando una sola vez en «16 hoteles disponibles» y no empuja a nadie fuera de la lista.
+
+**Respeta los filtros.** Si no pasa el precio, la categoría o los servicios que pusiste, no aparece. Pagar coloca más arriba; no salta un filtro que eligió el usuario.
+
+El distintivo no usa el ámbar de «Cancelación gratis»: ese color promete una ventaja, y esto es un aviso, no una ventaja.
+
 ## Cómo funciona el precio por edades
 
 Es la parte que da sentido al producto. Cada hotel tiene un campo `gratisHasta`: la edad, incluida, hasta la que un niño no paga. Por encima se cobra una cama supletoria del 28% del precio de la habitación.
@@ -69,6 +81,8 @@ Pruébalo: entra en un hotel con `gratisHasta` 12, cambia la edad de un niño de
 **Las etiquetas de entorno** de las tarjetas (Playa, Ciudad, Montaña, Lago, Selva): el objeto `ENTORNOS` de `datos.js`. Se derivan del campo `tipo` del destino, así que la etiqueta y la ilustración nunca se desincronizan.
 
 **Los colores y tamaños**: `:root`, al principio de `styles.css`.
+
+**El fondo topográfico**: `body::before` en `styles.css`. Son las mismas curvas de nivel que dibuja el hero, como SVG en un data URI, en un tono neutro al 7 %. Va fijo y sin repetir, así que no hay costuras al desplazar. Se ve sobre todo en los costados, donde `.wrap` deja el lienzo libre.
 
 ## Tres detalles a tener en cuenta
 

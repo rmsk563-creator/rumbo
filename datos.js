@@ -59,7 +59,11 @@
   /* ---------- 2. HOTELES ----------
      `gratisHasta` es la edad hasta la que el menor no paga cama
      supletoria, incluida. Es el dato que la mayoría de buscadores
-     esconde hasta el último paso del pago. */
+     esconde hasta el último paso del pago.
+
+     `patrocinado` marca el hotel que paga por posición en la lista de
+     resultados. Va declarado en los datos, no escondido en la lógica
+     de pintado, para que se vea de un vistazo cuál es. */
   const HOTELES = [
     { id:1, nombre:"Coral Bay Family Resort", destino:"cancun", estrellas:5, rating:4.7, resenas:2841, precio:196, foto:"h1-piscina",
       badge:"Niños hasta 12 gratis", gratisHasta:12, servicios:["piscina","kidsclub","desayuno","cuna","todoincluido","traslado"],
@@ -94,7 +98,7 @@
       mapa:{ x:30, y:42 } },
 
     { id:5, nombre:"Palma Real All Inclusive", destino:"punta-cana", estrellas:5, rating:4.8, resenas:3907, precio:238, foto:"h5-piscina",
-      badge:"Kids club 4-12 años", gratisHasta:12, servicios:["piscina","kidsclub","desayuno","cuna","todoincluido","traslado"],
+      badge:"Kids club 4-12 años", gratisHasta:12, patrocinado:true, servicios:["piscina","kidsclub","desayuno","cuna","todoincluido","traslado"],
       descripcion:"Todo incluido con parque acuático propio y seis restaurantes, cuatro de ellos sin reserva previa. Menú infantil disponible todo el día.",
       distancias:{ playa:"En primera línea, acceso directo", centro:"25 min en auto", aeropuerto:"20 min en auto" },
       fotos:["h5-piscina","h5-cuarto","h5-bano","h5-mesa","h5-vista"],

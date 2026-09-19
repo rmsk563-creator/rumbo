@@ -71,8 +71,30 @@
     return lista;
   }
 
+  /* ---------- Hotel patrocinado ----------
+     Ocupa siempre la tercera posición, sea cual sea el orden elegido.
+     Dos reglas que lo mantienen honesto:
+
+       · Se mueve, no se añade. Sigue contando una sola vez en «16
+         hoteles disponibles» y no desplaza a nadie fuera de la lista.
+       · Respeta los filtros. Si no pasa el precio, la categoría o los
+         servicios que el usuario puso, no aparece. Pagar coloca más
+         arriba; no salta un filtro que el usuario eligió.
+
+     La etiqueta lo dice en la propia tarjeta, no en una nota al pie:
+     si hay que buscar el aviso, el aviso no está hecho para leerse. */
+  const POS_PATROCINADO = 2;
+
+  function conPatrocinado(lista) {
+    const i = lista.findIndex(function (h) { return h.patrocinado; });
+    if (i === -1 || i === POS_PATROCINADO || lista.length <= POS_PATROCINADO) return lista;
+    const copia = lista.slice();
+    copia.splice(POS_PATROCINADO, 0, copia.splice(i, 1)[0]);
+    return copia;
+  }
+
   function pintarHoteles() {
-    const lista = filtrar();
+    const lista = conPatrocinado(filtrar());
     const cont = $("#hotels");
     const n = R.noches(estado.entrada, estado.salida);
 
@@ -101,7 +123,7 @@
         return '<span class="amenity">' + (meta ? meta.label : s) + '</span>';
       }).join("");
 
-      return '<article class="hotel">' +
+      return '<article class="hotel' + (h.patrocinado ? " hotel-patro" : "") + '">' +
         '<div class="art">' + R.escena(d.tipo) +
           R.imagen(h.fotos[0], "(max-width:620px) 92vw, 232px") +
           (h.badge ? '<span class="hotel-badge">' + h.badge + '</span>' : '') +
@@ -109,6 +131,13 @@
           R.favoritos.boton(h.id) +
         '</div>' +
         '<div class="hotel-main">' +
+          (h.patrocinado
+            ? '<p class="patro">' +
+                '<span class="patro-chip">Patrocinado</span>' +
+                '<span class="patro-txt">Este hotel paga por aparecer en esta posición. ' +
+                  'No cambia según el orden que elijas.</span>' +
+              '</p>'
+            : '') +
           '<h3><a class="hotel-link" href="hotel.html?id=' + h.id + '">' + h.nombre + '</a></h3>' +
           '<p class="hotel-loc">' + d.nombre + ', ' + d.pais + ' ' + R.estrellasSVG(h.estrellas) +
             '<span class="sr">' + h.estrellas + ' estrellas</span></p>' +
